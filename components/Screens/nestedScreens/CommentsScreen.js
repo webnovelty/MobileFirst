@@ -1,28 +1,59 @@
+import { useState } from 'react';
 import {
-	Image,
-	ImageBackground,
-	StyleSheet, Text, View
+	Image, StyleSheet, TextInput, TouchableOpacity, View
 } from 'react-native';
+
+const initialState = {
+	comment: "",
+};
+
 
 export default function CommentsScreen({ route }) {
 
+
+	const handleSubmit = () => {
+
+		setState(initialState)
+	}
+
+	const [state, setState] = useState(initialState);
 	return (
 		<View style={styles.container}>
+			<View style={styles.top}>
+				<View styles={styles.img}>
+					<Image
+						source={{ uri: route.params.photo }}
+						style={styles.photo}
+					/>
+				</View>
+				<View style={styles.middle}>
 
-
+				</View>
 				<View style={styles.form}>
 
+					<TextInput
+						backgroundColor="#F6F6F6"
+						placeholder="Комментарий"
+						style={styles.input}
+						textAlign={"center"}
+						value={state.comment}
+						onChangeText={(value) => setState((prevState) => ({ ...prevState, login: value }))}
+					/>
+					<View style={styles.btn}>
+						<TouchableOpacity
+							activeOpacity={0.8}
+							onPress={handleSubmit}>
+							<Image style={styles.img}
 
-					<View  style={styles.top}>
-						<Image
-							source={{ uri: route.params.photo }}
-							style={styles.photo}
-						/>
+								source={require('../../../assets/images/Send.png')}
+							/>
+						</TouchableOpacity>
 					</View>
 
 				</View>
 
 
+			</View>
 		</View>
 	)
 }
@@ -33,6 +64,7 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: '#fff',
+		alignItems: "center",
 
 
 	},
@@ -47,6 +79,8 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-end',
 	},
 	input: {
+		width: 250,
+		marginHorizontal: 16,
 		fontFamily: "RubikBubbles-Regular",
 		borderWidth: 1,
 		borderColor: "#E8E8E8",
@@ -59,13 +93,10 @@ const styles = StyleSheet.create({
 		marginBottom: 16,
 	},
 	form: {
-		justifyContent: "flex-start",
+		flexDirection: "row",
+		alignItems: "stretch",
+		justifyContent: "center",
 		backgroundColor: "white",
-		borderTopLeftRadius: 25,
-		borderTopRightRadius: 25,
-		paddingHorizontal: 16,
-
-
 	},
 	headText: {
 		fontFamily: "RubikBubbles-Regular",
@@ -76,10 +107,10 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 	},
 	btn: {
-		backgroundColor: "#FF6C00",
+		width: 34,
+		height: 34,
 		border: 1,
 		borderRadius: 100,
-		margin: 16,
 		height: 51,
 		justifyContent: 'center',
 		alignItems: "center",
@@ -90,7 +121,7 @@ const styles = StyleSheet.create({
 		fontFamily: "RubikBubbles-Regular",
 
 	},
-	avatar: {
+	top: {
 		marginLeft: "auto",
 		marginRight: "auto",
 	},
@@ -110,8 +141,8 @@ const styles = StyleSheet.create({
 		borderColor: "#000"
 	},
 	img: {
-		height: 120,
-		width: 120,
+		marginLeft: "auto",
+		marginRight: "auto",
 	},
 	info: {
 		marginVertical: 32,
@@ -121,8 +152,7 @@ const styles = StyleSheet.create({
 		fontSize: 30,
 		lineHeight: 35,
 	},
-	top: {
-		
-		
-	},
+	middle: {
+		height: 300,
+	}
 });
