@@ -33,12 +33,19 @@ const Home = ({ route, navigation }) => {
 						console.log(item)
 						return (
 							<View style={styles.block}>
+								<TouchableOpacity
+									title="Comments"
+									onPress={() =>
+										navigation.navigate('Комментарии', item)
+									}
+								>
 								<View>
 								<Image
 									source={{ uri: item.photo }}
 									style={styles.photo}
 								/>
-								</View>
+									</View>
+								</TouchableOpacity>
 								<View style={styles.blockLable}>
 									<Text>{item.state.name}</Text>
 							
@@ -46,7 +53,7 @@ const Home = ({ route, navigation }) => {
 									<TouchableOpacity
 										title="Map"
 										onPress={() =>
-											navigation.navigate('Карта', item, console.log(item))
+											navigation.navigate('Карта', item)
 										}
 									>
 										<View style={styles.geo}>
