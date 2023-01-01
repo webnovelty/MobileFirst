@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
+
 import {
 	ImageBackground, Keyboard, KeyboardAvoidingView,
 	StyleSheet,
@@ -7,57 +8,44 @@ import {
 	TextInput,
 	TouchableOpacity,
 	TouchableWithoutFeedback,
-	View,
-	Image,
+	View
 } from 'react-native';
-import LoginScreen from '../LoginScreen/LoginScreen';
+
+import { useDispatch } from 'react-redux';
+import { authSignInUser } from '../../../redux/auth/authOperations';
 
 const initialState = {
-	login: "",
 	email: "",
 	password: "",
 };
 
-export default function RegistrationScreen() {
+export default function LoginScreen({navigation}) {
 	const [isShowKeyBoard, setIsShowKeyBoard] = useState(false);
 	const [state, setState] = useState(initialState);
-	const [toggleRender, setToggleRender] = useState(true);
+	const dispatch = useDispatch()
 
-	const keyBoardHide = () => {
+	const handleSubmit = () => {
 		setIsShowKeyBoard(false)
 		Keyboard.dismiss()
-		console.log(state)
+		dispatch(authSignInUser(state))
 		setState(initialState)
 	}
 
 
 
 	return (
-		<TouchableWithoutFeedback onPress={keyBoardHide}>
-			{toggleRender ? (
+		<TouchableWithoutFeedback onPress={handleSubmit}>
+		
 				<View style={styles.container}>
 
 					<ImageBackground
 						style={styles.image}
-						source={require("../../assets/images/backHW.png")}>
+					source={require("../../../assets/images/backHW.png")}>
 						<KeyboardAvoidingView
 							behavior={Platform.OS === "ios" ? "padding" : ""}>
 							<View style={{ ...styles.form, paddingBottom: isShowKeyBoard ? 20 : 78 }}>
-								<Image
-									style={styles.avatar}
-									source={require('../../assets/images/avatar.png')}
-								/>
-								<Text style={styles.headText}>Регистрация</Text>
+								<Text style={styles.headText}>Войти</Text>
 								<View>
-									<TextInput
-										backgroundColor="#F6F6F6"
-										placeholder="Логин"
-										style={styles.input}
-										textAlign={"center"}
-										value={state.login}
-										onFocus={() => setIsShowKeyBoard(true)}
-										onChangeText={(value) => setState((prevState) => ({ ...prevState, login: value }))}
-									/>
 									<TextInput
 										backgroundColor="#F6F6F6"
 										placeholder="Адрес электронной почты"
@@ -81,21 +69,22 @@ export default function RegistrationScreen() {
 								<TouchableOpacity
 									style={styles.btn}
 									activeOpacity={0.8}
-									onPress={keyBoardHide}>
+									onPress={handleSubmit}>
 									<Text
-										style={styles.btnTitle}>Зарегистрироваться</Text>
+										style={styles.btnTitle}>Войти</Text>
 								</TouchableOpacity>
 
 
 								<View>
 									<TouchableOpacity
-									
+
 										activeOpacity={0.8}
-										onPress={() => setToggleRender(!toggleRender)}
+										onPress={() => navigation.navigate("Register")}
 									>
-										<Text style={styles.link}>Уже есть аккаунт? Войти!</Text>
+										<Text style={styles.link}>Нет аккаунта? Зарегистрироваться</Text>
 									</TouchableOpacity>
 								</View>
+
 
 							</View>
 						</KeyboardAvoidingView>
@@ -103,8 +92,7 @@ export default function RegistrationScreen() {
 					</ImageBackground>
 
 
-				</View>) :
-				<LoginScreen/>}
+				</View>
 		</TouchableWithoutFeedback>
 	);
 }
@@ -113,7 +101,7 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: '#fff',
-		// fontFamily: "RubikVR",
+
 
 	},
 	image: {
@@ -122,6 +110,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-end',
 	},
 	input: {
+		fontFamily: "RubikBubbles-Regular",
 		borderWidth: 1,
 		borderColor: "#E8E8E8",
 		height: 50,
@@ -139,8 +128,10 @@ const styles = StyleSheet.create({
 		borderTopRightRadius: 25,
 		paddingHorizontal: 16,
 
+
 	},
 	headText: {
+		fontFamily: "RubikBubbles-Regular",
 		color: "#212121",
 		marginVertical: 32,
 		fontSize: 30,
@@ -159,6 +150,8 @@ const styles = StyleSheet.create({
 	btnTitle: {
 		color: "#fff",
 		fontSize: 16,
+		fontFamily: "RubikBubbles-Regular",
+
 	},
 	avatar: {
 		marginLeft: "auto",
@@ -168,6 +161,8 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 		color: "#1B4371",
 		fontSize: 16,
-	lineHeight: 19,
+		lineHeight: 19,
+		fontFamily: "RubikBubbles-Regular",
+
 	}
 });
