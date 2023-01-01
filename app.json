@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "MobileFirst",
-    "slug": "MobileFirst",
+    "slug": "myfirstapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -18,16 +18,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.webnovelty.myfirstapp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.webnovelty.myfirstapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8ee39be8-3215-41c5-bf5d-1a607c34db4f"
+      }
+    },
+    "owner": "webnovelty"
   }
 }
