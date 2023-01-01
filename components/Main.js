@@ -25,7 +25,6 @@ const Main = () => {
 
 	auth.onAuthStateChanged(user => {
 		setUser(user);
-		console.log(user)
 	});
 	const routing = useRoute(stateChange)
 

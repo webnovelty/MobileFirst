@@ -1,15 +1,21 @@
+import { Feather } from '@expo/vector-icons';
+import { collection, getDocs } from 'firebase/firestore';
 import React, { useEffect, useState } from "react";
-import { Feather} from '@expo/vector-icons';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { db } from '../../../firebase/config';
 
 const Home = ({ route, navigation }) => {
-	const [posts, setPosts] = useState([])
-	useEffect(() => {
-		if (route.params) {
-			setPosts(prevState => [...prevState, route.params])
-		}
+	const [posts, setPosts] = useState([]);
+	const getAllPosts = async () => {
+		const data = await getDocs(collection(db, 'posts'));
+		const posts = data.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+		setPosts(posts);
+	};
 
-	}, [route.params])
+
+	useEffect(() => {
+		getAllPosts();
+	}, [getAllPosts]);
 
 	return (
 
@@ -26,29 +32,29 @@ const Home = ({ route, navigation }) => {
 
 			</View>
 			{!route.params && <Text style={styles.postNo}>Еще нет не одного поста :(</Text>}
-				<FlatList
-					data={posts}
-					keyExtractor={(item, index) => index.toString()}
-					renderItem={({ item }) => {
-						console.log(item)
-						return (
-							<View style={styles.block}>
-								<TouchableOpacity
-									title="Comments"
-									onPress={() =>
-										navigation.navigate('Комментарии', item)
-									}
-								>
+			<FlatList
+				data={posts}
+				keyExtractor={(item, index) => index.toString()}
+				renderItem={({ item }) => {
+					
+					return (
+						<View style={styles.block}>
+							<TouchableOpacity
+								title="Comments"
+								onPress={() =>
+									navigation.navigate('Комментарии', item)
+								}
+							>
 								<View>
-								<Image
-									source={{ uri: item.photo }}
-									style={styles.photo}
-								/>
-									</View>
-								</TouchableOpacity>
-								<View style={styles.blockLable}>
-									<Text>{item.state.name}</Text>
-							
+									<Image
+										source={{ uri: item.photo }}
+										style={styles.photo}
+									/>
+								</View>
+							</TouchableOpacity>
+							<View style={styles.blockLable}>
+								<Text>{item.photo.name}</Text>
+
 								{item.location && (
 									<TouchableOpacity
 										title="Map"
@@ -57,15 +63,15 @@ const Home = ({ route, navigation }) => {
 										}
 									>
 										<View style={styles.geo}>
-										<Feather name="map-pin" size={24} color="#ff8c00" />
-											<Text style={styles.textGeo}>{item.state.map}</Text>
+											<Feather name="map-pin" size={24} color="#ff8c00" />
+											<Text style={styles.textGeo}>{item.photo.map}</Text>
 										</View>
 									</TouchableOpacity>
-									)}
-								</View>
+								)}
 							</View>
-						)
-					}} />
+						</View>
+					)
+				}} />
 		</View>
 	);
 };
@@ -77,7 +83,7 @@ const styles = StyleSheet.create({
 
 	},
 	blockMain: {
-		
+
 		flexDirection: "row",
 		margin: 15,
 
@@ -90,7 +96,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		flexDirection: "row",
 		marginTop: 15,
-	
+
 	},
 	block: {
 
@@ -116,7 +122,7 @@ const styles = StyleSheet.create({
 		fontSize: 13,
 		lineHeight: 15,
 
-		
+
 	},
 	nameComment: {
 		fontWeight: "bold",
@@ -132,7 +138,7 @@ const styles = StyleSheet.create({
 		borderColor: "#000"
 	},
 	geo: {
-		
+
 		flexDirection: "row",
 	},
 	textGeo: {

@@ -16,7 +16,7 @@ import RegistrationScreen from './components/Screens/auth/RegistrationScreen';
 import CreatePostsScreen from './components/Screens/home/CreatePostsScreen';
 import PostsScreen from './components/Screens/home/PostsScreen';
 import ProfileScreen from './components/Screens/home/ProfileScreen';
-import { authSlice } from './redux/auth/authReducer';
+import { authSignOutUser } from './redux/auth/authOperations';
 
 
 
@@ -40,7 +40,7 @@ const AuthScreen = () => {
 const HomeScreen = () => {
 	const dispatch = useDispatch();
 	const signOut = () => {
-		dispatch(authSlice.actions.authSingOut());
+		dispatch(authSignOutUser());
 	}
 
 	return (

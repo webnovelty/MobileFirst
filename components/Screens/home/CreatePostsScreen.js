@@ -1,12 +1,15 @@
 import { Camera } from "expo-camera";
-import React, { useState, useEffect } from "react";
 import * as Location from 'expo-location';
+import { addDoc, collection } from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import React, { useEffect, useState } from "react";
 import {
-	Image, KeyboardAvoidingView, StyleSheet, Keyboard,
-	Text,
+	Image, StyleSheet, Text,
 	TextInput,
-	TouchableOpacity, TouchableWithoutFeedback, View
+	TouchableOpacity, View
 } from "react-native";
+import { useSelector } from 'react-redux';
+import { db, storage } from '../../../firebase/config';
 
 const initialState = {
 	name: "",
@@ -15,7 +18,7 @@ const initialState = {
 
 
 
-export default function CreatePostsScreen({navigation}) {
+export default function CreatePostsScreen({ navigation }) {
 	const [camera, setCamera] = useState(null)
 	const [isShowKeyBoard, setIsShowKeyBoard] = useState(false);
 	const [state, setState] = useState(initialState);
@@ -23,6 +26,7 @@ export default function CreatePostsScreen({navigation}) {
 	const [location, setLocation] = useState(null);
 	const [hasCamPermission, setHasCamPermission] = useState(false);
 	const [hasLocationPermission, setHasLocationPermission] = useState(false);
+	const stateScreen = useSelector(state => state.auth);
 
 	useEffect(() => {
 		(async () => {
@@ -45,19 +49,45 @@ export default function CreatePostsScreen({navigation}) {
 	}
 
 	const sendPhoto = async () => {
-		
-		navigation.navigate("Home", { photo, location, state })
-	setState(initialState)
+		uploadPostServer()
+		console.log("stateScreen",stateScreen)
+		navigation.navigate("Home")
+		setState(initialState)
 		setPhoto("");
-		
+
 	}
+
+	const uploadPhotoServer = async () => {
+		console.log(photo)
+		const response = await fetch(photo)
+		const file = await response.blob()
+		const photoId = Date.now().toString();
+		const imageRef = ref(storage, `images/${photoId}`);
+		await uploadBytes(imageRef, file);
+		const data = await getDownloadURL(imageRef);
+		console.log(data)
+		return data;
+	};
+
+	const uploadPostServer = async () => {
+		const photo = await uploadPhotoServer();
+		const currentLocation = await Location.getCurrentPositionAsync({});
+		const docRef = await addDoc(collection(db, 'posts'), {
+			photo,
+			photoLocation: currentLocation.coords,
+			photoPlace: state.map,
+			photoName: state.name,
+			userId: stateScreen.userId,
+			login: stateScreen.login,
+		});
+	};
 
 	if (hasCamPermission === false) {
 		return <Text>No access to camera</Text>;
 	}
 
 	return (
-			<View style={styles.container}>
+		<View style={styles.container}>
 			<Camera style={styles.camera} ref={setCamera}>
 				{photo && (<View style={styles.takePhotoContainer}>
 					<Image source={{ uri: photo }} style={{
@@ -65,14 +95,14 @@ export default function CreatePostsScreen({navigation}) {
 						width: 150,
 					}} />
 				</View>)}
-				
-						<TouchableOpacity onPress={takePhoto}>
-							<Image
-								style={styles.snap}
+
+				<TouchableOpacity onPress={takePhoto}>
+					<Image
+						style={styles.snap}
 						source={require('../../../assets/images/photo.png')}
-							/>
+					/>
 				</TouchableOpacity>
-				
+
 			</Camera>
 			<TouchableOpacity
 				style={styles.upload}
@@ -82,31 +112,31 @@ export default function CreatePostsScreen({navigation}) {
 				<Text
 					style={styles.btnTitle}>Загрузите фото</Text>
 			</TouchableOpacity>
-						<View style={styles.form}>
-							<View>
-								<TextInput
-									placeholder="  Название..."
-									style={styles.input}
-									value={state.name}
-									onFocus={() => setIsShowKeyBoard(true)}
-									onChangeText={(value) => setState((prevState) => ({ ...prevState, name: value }))}
-								/>
-								<TextInput
-									placeholder="  Местность"
-									style={styles.input}
-									value={state.map}
-									onFocus={() => setIsShowKeyBoard(true)}
-									onChangeText={(value) => setState((prevState) => ({ ...prevState, map: value }))}
-								/>
-							</View>
-							<TouchableOpacity
+			<View style={styles.form}>
+				<View>
+					<TextInput
+						placeholder="  Название..."
+						style={styles.input}
+						value={state.name}
+						onFocus={() => setIsShowKeyBoard(true)}
+						onChangeText={(value) => setState((prevState) => ({ ...prevState, name: value }))}
+					/>
+					<TextInput
+						placeholder="  Местность"
+						style={styles.input}
+						value={state.map}
+						onFocus={() => setIsShowKeyBoard(true)}
+						onChangeText={(value) => setState((prevState) => ({ ...prevState, map: value }))}
+					/>
+				</View>
+				<TouchableOpacity
 					style={styles.btn}
 					activeOpacity={0.8}
 					onPress={sendPhoto}
-							>
-								<Text
-									style={styles.btnTitle}>Опубликовать</Text>
-							</TouchableOpacity>
+				>
+					<Text
+						style={styles.btnTitle}>Опубликовать</Text>
+				</TouchableOpacity>
 			</View>
 			<TouchableOpacity onPress={takePhoto}>
 				<Image
@@ -114,7 +144,7 @@ export default function CreatePostsScreen({navigation}) {
 					source={require('../../../assets/images/trash.png')}
 				/>
 			</TouchableOpacity>
-			</View>
+		</View>
 	);
 }
 

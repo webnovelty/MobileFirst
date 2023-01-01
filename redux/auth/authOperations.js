@@ -1,9 +1,9 @@
-import { auth } from '../../firebase/config';
-import { authSlice } from './authReducer';
 import {
 	createUserWithEmailAndPassword,
-	signInWithEmailAndPassword,
+	signInWithEmailAndPassword, signOut,
 } from 'firebase/auth';
+import { auth } from '../../firebase/config';
+import { authSlice } from './authReducer';
 
 
 export const authSignUpUser =
@@ -17,10 +17,10 @@ export const authSignUpUser =
 						displayName: login,
 					})
 				);
-				
+
 				return { user: user, login };
 			} catch (error) {
-				
+
 				console.log('error.message', error.message);
 			}
 		};
@@ -31,7 +31,7 @@ export const authSignInUser = ({ email, password }) => async (dispatch, getSatte
 	try {
 		const userLogin = await signInWithEmailAndPassword(auth, email, password);
 	} catch (error) {
-		
+
 		console.log('error.message', error.message);
 	}
 
@@ -51,7 +51,7 @@ export const authStateChangeUser = () => async (dispatch, getState) => {
 	await auth.onAuthStateChanged(user => {
 		console.log(user);
 		if (user) {
-			
+
 			dispatch(authSlice.actions.authStateChange({ stateChange: true }));
 		}
 	});
