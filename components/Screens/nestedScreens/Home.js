@@ -31,11 +31,12 @@ const Home = ({ route, navigation }) => {
 				</View>
 
 			</View>
-			{!route.params && <Text style={styles.postNo}>Еще нет не одного поста :(</Text>}
+			{!posts && <Text style={styles.postNo}>Еще нет не одного поста :(</Text>}
 			<FlatList
 				data={posts}
 				keyExtractor={(item, index) => index.toString()}
 				renderItem={({ item }) => {
+					
 					
 					return (
 						<View style={styles.block}>
@@ -53,9 +54,9 @@ const Home = ({ route, navigation }) => {
 								</View>
 							</TouchableOpacity>
 							<View style={styles.blockLable}>
-								<Text>{item.photo.name}</Text>
+								<Text>{item.photoName}</Text>
 
-								{item.location && (
+								
 									<TouchableOpacity
 										title="Map"
 										onPress={() =>
@@ -64,10 +65,10 @@ const Home = ({ route, navigation }) => {
 									>
 										<View style={styles.geo}>
 											<Feather name="map-pin" size={24} color="#ff8c00" />
-											<Text style={styles.textGeo}>{item.photo.map}</Text>
+											<Text style={styles.textGeo}>{item.photoPlace}</Text>
 										</View>
 									</TouchableOpacity>
-								)}
+								
 							</View>
 						</View>
 					)

@@ -49,7 +49,7 @@ export const authSignOutUser = () => async (dispatch, getSatte) => {
 
 export const authStateChangeUser = () => async (dispatch, getState) => {
 	await auth.onAuthStateChanged(user => {
-		console.log(user);
+		
 		if (user) {
 
 			dispatch(authSlice.actions.authStateChange({ stateChange: true }));
