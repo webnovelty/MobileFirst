@@ -40,23 +40,31 @@ const Home = ({ route, navigation }) => {
 					
 					return (
 						<View style={styles.block}>
-							<TouchableOpacity
-								title="Comments"
-								onPress={() =>
-									navigation.navigate('Комментарии', item)
-								}
-							>
-								<View>
-									<Image
-										source={{ uri: item.photo }}
-										style={styles.photo}
-									/>
-								</View>
-							</TouchableOpacity>
-							<View style={styles.blockLable}>
+							<View>
+								<Image
+									source={{ uri: item.photo }}
+									style={styles.photo}
+								/>
 								<Text>{item.photoName}</Text>
-
+							</View>
+							
+							<View style={styles.blockLable}>
 								
+
+								<TouchableOpacity
+									title="Comments"
+									onPress={() =>
+										navigation.navigate('Комментарии', item)
+									}
+								>
+
+									<View>
+										<Image
+											source={require('../../../assets/images/message-circle.png')}
+
+										/>
+									</View>
+								</TouchableOpacity>
 									<TouchableOpacity
 										title="Map"
 										onPress={() =>

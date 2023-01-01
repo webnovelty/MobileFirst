@@ -1,141 +1,143 @@
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { db } from '../../../firebase/config';
+
 import {
-	Image,
+	View,
+	Text,
 	ImageBackground,
-	StyleSheet, Text, View
+	Image,
+	StyleSheet,
+	FlatList,
+	TouchableOpacity,
 } from 'react-native';
+
+import {
+	MaterialIcons,
+	MaterialCommunityIcons,
+	EvilIcons,
+} from '@expo/vector-icons';
 
 export default function ProfileScreen({ route }) {
 
-console.log(route.params);
+	const { userId, login } = useSelector(state => state.auth);
+	const [profilePosts, setProfilePosts] = useState([]);
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		getAllProfilePosts();
+	}, [getAllProfilePosts]);
+
+	const getAllProfilePosts = async () => {
+		const data = await getDocs(
+			query(collection(db, 'posts'), where('userId', '==', userId))
+		);
+		const posts = data.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+		setProfilePosts(posts);
+	};
+
 
 	return (
-		<View style={styles.container}>
-
+		<View style={styles.containerProfile}>
 			<ImageBackground
 				style={styles.image}
-				source={require("../../../assets/images/backHW.png")}>
-
-
-				<View style={styles.form}>
-
-					<View style={styles.blockMain}>
-						<Image style={styles.img}
-
-							source={require('../../../assets/images/User.jpg')}
-						/>
-						<View style={styles.info}>
-							<Text style={styles.name}>Natalie Romanova</Text>
-						</View>
-
+				source={require('../../../assets/images/backHW.png')}
+			>
+				<View style={styles.containerViewProfile}>
+				
+					<View style={styles.titleProfile}>
+						<Text style={styles.profileTitle}>{login}</Text>
 					</View>
-
-					{route.params?.photo && (<View>
-						<Image
-							source={{ uri: route.params.photo }}
-							style={styles.photo}
+					{profilePosts && (
+						<FlatList
+							data={profilePosts}
+							keyExtractor={item => item.id}
+							renderItem={({ item }) => (
+								<View style={styles.postWrapper}>
+									<View style={styles.imageWrapper}>
+										<Image source={{ uri: item.photo }} style={styles.image} />
+									</View>
+									<View style={styles.potoWrapper}>
+										<Text>{item.photoCaption}</Text>
+									</View>
+									<View style={styles.btnWrapper}>
+										<TouchableOpacity
+											activeOpacity={0.8}
+											onPress={() =>
+												navigation.navigate('Comments', { postId: item.id })
+											}
+										>
+											<EvilIcons name="comment" size={25} color="#BDBDBD" />
+										</TouchableOpacity>
+										<TouchableOpacity
+											activeOpacity={0.8}
+											onPress={() =>
+												navigation.navigate('Map', {
+													location: item.photoLocation,
+												})
+											}
+										>
+											<MaterialCommunityIcons
+												name="map-marker"
+												size={25}
+												color="#BDBDBD"
+											/>
+										</TouchableOpacity>
+									</View>
+								</View>
+							)}
 						/>
-					</View>)}
-
+					)}
 				</View>
 			</ImageBackground>
-
-
 		</View>
-	)
-}
+	);
+};
 
 
+export const styles = StyleSheet.create({
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: '#fff',
-
-
-	},
-	blockMain: {
-		alignItems: "center",
-		marginLeft: "auto",
-		marginRight: "auto",
-	},
 	image: {
 		flex: 1,
-		resizeMode: "cover",
+		resizeMode: 'cover',
 		justifyContent: 'flex-end',
 	},
-	input: {
-		fontFamily: "RubikBubbles-Regular",
-		borderWidth: 1,
-		borderColor: "#E8E8E8",
-		height: 50,
-		borderRadius: 8,
-		color: "#BDBDBD",
-		background: "#F6F6F6",
-		fontSize: 16,
-		lineHeight: 19,
-		marginBottom: 16,
-	},
-	form: {
 
-		backgroundColor: "white",
+	containerProfile: {
+		flex: 1,
+	},
+
+	containerViewProfile: {
+		backgroundColor: '#FFFFFF',
 		borderTopLeftRadius: 25,
 		borderTopRightRadius: 25,
-		paddingHorizontal: 16,
-
-
+		paddingHorizontal: 10,
+		paddingTop: 85,
+		paddingBottom: 10,
+		maxHeight: '70%',
 	},
-	headText: {
-		fontFamily: "RubikBubbles-Regular",
-		color: "#212121",
-		marginVertical: 32,
+	profileTitle: {
 		fontSize: 30,
-		lineHeight: 35,
-		textAlign: "center",
+		alignItems: 'center',
 	},
-	btn: {
-		backgroundColor: "#FF6C00",
-		border: 1,
-		borderRadius: 100,
-		margin: 16,
-		height: 51,
-		justifyContent: 'center',
-		alignItems: "center",
+	titleProfile: {
+		alignItems: 'center',
+		marginBottom: 30,
 	},
-	btnTitle: {
-		color: "#fff",
-		fontSize: 16,
-		fontFamily: "RubikBubbles-Regular",
 
+	imageWrapper: {
+		borderRadius: 8,
+		marginBottom: 8,
 	},
-	avatar: {
-		marginLeft: "auto",
-		marginRight: "auto",
+	postWrapper: {
+		marginBottom: 20,
 	},
-	link: {
-		textAlign: "center",
-		color: "#1B4371",
-		fontSize: 16,
-		lineHeight: 19,
-		fontFamily: "RubikBubbles-Regular",
-
+	btnWrapper: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
 	},
-	photo: {
-		justifyContent: "center",
-		width: 343,
-		height: 240,
-		borderWidth: 1,
-		borderColor: "#000"
+	potoWrapper: {
+		marginBottom: 10,
 	},
-	img: {
-		height: 120,
-		width: 120,
-	},
-	info: {
-		marginVertical: 32,
-	},
-	name: {
-		fontWeight: "bold",
-		fontSize: 30,
-		lineHeight: 35,
-	}
 });

@@ -1,10 +1,12 @@
 import { View} from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
-export default function MapScreen({route}) {
-	const coordinate = route.params.location;
-	const title = route.params.state.map;
-	console.log(coordinate.latitudeDelta, title)
+export default function MapScreen({ route }) {
+	const coordinate = route.params.photoLocation;
+	const title = route.params.photoPlace;
+
+	console.log(route.params);
+	
 
 	return (
 		<View style={{ flex: 1 }}>

@@ -1,22 +1,42 @@
-import { useState } from 'react';
-import {
-	Image, StyleSheet, TextInput, TouchableOpacity, View
-} from 'react-native';
+import { addDoc, collection, getDocs } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import { FlatList, Image, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSelector } from 'react-redux';
+import { db } from '../../../firebase/config';
 
-const initialState = {
-	comment: "",
-};
+
 
 
 export default function CommentsScreen({ route }) {
 
 
-	const handleSubmit = () => {
 
-		setState(initialState)
-	}
+	const { id } = route.params;
+	const [comment, setComment] = useState('');
+	const { login } = useSelector(state => state.auth)
+	const [allComments, setAllComments] = useState([]);
 
-	const [state, setState] = useState(initialState);
+
+	useEffect(() => {
+		getAllComments();
+	}, [getAllComments]);
+
+
+
+	const uploadCommentToServer = async () => {
+		await addDoc(collection(db, `posts/${id}/comments`), {
+			comment,
+			login,
+		});
+		setComment('');
+	};
+
+	const getAllComments = async () => {
+		const data = await getDocs(collection(db, `posts/${id}/comments`));
+		const comments = data.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+		setAllComments(comments);
+	};
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.top}>
@@ -27,22 +47,35 @@ export default function CommentsScreen({ route }) {
 					/>
 				</View>
 				<View style={styles.middle}>
-
+					{allComments && (
+						<SafeAreaView>
+							<FlatList
+								data={allComments}
+								keyExtractor={item => item.id}
+								renderItem={({ item }) => (
+									<View>
+										<Text>{item.login}</Text>
+										<View>
+											<Text>{item.comment}</Text>
+										</View>
+									</View>
+								)}
+							/>
+						</SafeAreaView>
+					)}
 				</View>
 				<View style={styles.form}>
 
 					<TextInput
-						backgroundColor="#F6F6F6"
 						placeholder="Комментарий"
-						style={styles.input}
-						textAlign={"center"}
-						value={state.comment}
-						onChangeText={(value) => setState((prevState) => ({ ...prevState, login: value }))}
+						style={styles.commentInput}
+						value={comment}
+						onChangeText={value => setComment(value)}
 					/>
 					<View style={styles.btn}>
 						<TouchableOpacity
 							activeOpacity={0.8}
-							onPress={handleSubmit}>
+							onPress={uploadCommentToServer}>
 							<Image style={styles.img}
 
 								source={require('../../../assets/images/Send.png')}

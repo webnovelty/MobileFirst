@@ -76,6 +76,7 @@ const HomeScreen = () => {
 
 						</View>
 					),
+					headerShown: true,
 				}}
 				name="Публикации"
 				component={PostsScreen} />
@@ -94,6 +95,17 @@ const HomeScreen = () => {
 				component={CreatePostsScreen} />
 			<MainTab.Screen
 				options={{
+					headerRight: () => (
+						<TouchableOpacity
+							style={styles.btn}
+							activeOpacity={0.8}
+							onPress={signOut}>
+							<Image
+								style={styles.logOut}
+								source={require('./assets/images/tabs/log-out.png')}
+							/>
+						</TouchableOpacity>
+					),
 					tabBarIcon: ({ focused }) => (
 						<View style={focused}>
 							<Image
